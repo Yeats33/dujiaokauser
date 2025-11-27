@@ -1,6 +1,9 @@
 name: Build Artifact for Deployment
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -32,8 +35,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-
 
-      - name: Prepare cache directory
-        run: mkdir -p bootstrap/cache && chmod -R 775 bootstrap/cache
+      - name: Prepare cache and storage directories
+        run: |
+          mkdir -p bootstrap/cache \
+            storage/framework/cache/data \
+            storage/framework/sessions \
+            storage/framework/views \
+            storage/logs
+          chmod -R 775 bootstrap/cache storage
 
       - name: Install PHP dependencies
         run: composer install --no-dev --prefer-dist --no-progress --no-interaction --optimize-autoloader
